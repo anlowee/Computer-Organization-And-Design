@@ -10,4 +10,8 @@ Warning that shorter `execution time` may not correspond with better `throughput
 + `CPU Execution Time` is subset of `Execution Time`, it's only stand for the time cost in CPU, but except in I/O or some other places. But actually user can only feel `Execution Time`.
 
 # Time Caculation
-`Clock Cycle` is a unit, just like a class is 45mins, then **class** is correspond with `clock cycle`.
++ `Clock Cycle` is a unit, just like a class is 45mins, then **class** is correspond with `clock cycle`.
+
++ A very important thing is the only performance is determined by `CPU time`. For example, a processor can execture many instructions per second, but when it working, it may need to execute more instructions too(determined by `ISA`, about algorithm), thus, it may has longer CPU time.
+
+PS: ↑ is very important, in brief, walk fast may not through the closest path.
