@@ -120,7 +120,7 @@ Find the change in the SPEC ratio for this change.
 
 **A:** 1 / (1 + 15.5%) = 0.86, decrease 14%.
 
-## 1.11.6 [10] <§1.6> (wrong answer)
+## 1.11.6 [10] <§1.6> 
 Suppose that we are developing a new version of the AMD Barcelona processor with a 4 GHz clock rate. We have added some additional instructions to the instruction set in such a way that the number of instructions has been reduced by 15%.  The execution time is reduced to 700 s and the new SPEC ratio is 13.7.  Find the new CPI.
 
 **A:** 
@@ -129,39 +129,33 @@ cycles = time * rate = 700 * 4e9 = 2.8e12
 
 I = 2.389e12 * 85% = 2.031e12
 
-CPI = cycles / I = 0.725
+CPI = cycles / I = 1.378
 
-## 1.11.7 [10] <§1.6> (wrong answer)
+## 1.11.7 [10] <§1.6> 
 This CPI value is larger than obtained in 1.11.1 as the clock rate was increased from 3 GHz to 4 GHz. Determine whether the increase in the CPI is similar to that of the clock rate. If they are dissimilar, why? 
 
-**A:** CPI increase rate is 1.30, clock rate increase is 1.33. They are dissimilar, the difference is caused by 15% instruction decrease.
+**A:** CPI increase rate is 1.45, clock rate increase is 1.33. They are dissimilar, the difference is caused by 15% instruction decrease.
 
 ## 1.11.8 [5] <§1.6> 
 By how much has the CPU time been reduced?
 
 **A:** (750 - 700) / 750 = 6.7%
 
-## 1.11.9 [10] <§1.6> (wrong answer)
+## 1.11.9 [10] <§1.6>
 For a second benchmark, libquantum, assume an execution time of 960 ns, CPI of 1.61, and clock rate of 3 GHz.  If the execution time is reduced by an additional 10% without affecting to the CPI and with a clock rate of 4 GHz, determine the number of instructions. 
 
-**A:** 
-
-instructions increase ratio = 9 / 10 / (3 / 4) = 1.2
-
-original instructions count = 960 ns * 3GHz / CPI = 1.79e3
-
-new instructions count = 1.79e3 * 1.2 = 2.15e3
+**A:** I = time * rate / CPI = 960e-9 * 0.9 * 4GHz / 1.61 = 2.146e12  
 
 
-## 1.11.10 [10] <§1.6> (wrong answer)
+## 1.11.10 [10] <§1.6>
 Determine the clock rate required to give a further 10% reduction in CPU time while maintaining the number of instructions and with the CPI unchanged. 
 
-**A:** 4 / 0.9 = 4.44 GHz
+**A:** 3 / 0.9 = 3.33 GHz(ps: here the rate is ambiguous, this '3' is from 1.11.9, if it's '4', the answer is 4 / 0.9 = 4.44 GHz)
 
-## 1.11.11 [10] <§1.6> (wrong answer)
+## 1.11.11 [10] <§1.6>
 Determine the clock rate if the CPI is reduced by 15% and the CPU time by 20% while the number of instructions is unchanged.
 
-**A:** 4 * 0.85 / 0.8 = 4.25 GHz
+**A:** 3 * 0.85 / 0.8 = 3.19 GHz(ps: here the rate is ambiguous, this '3' is from 1.11.9, if it's '4', the answer is 4 * 0.85 / 0.8 = 4.25 GHz)
 
 # 1.12 
 Section 1.10 cites as a pitfall the utilization of a subset of the performance equation as a performance metric. To illustrate this, consider the following two processors. P1 has a clock rate of 4 GHz, average CPI of 0.9, and requires the execution of 5.0E9 instructions.  P2 has a clock rate of 3 GHz, an average CPI of 0.75, and requires the execution of 1.0E9 instructions. 
@@ -208,7 +202,7 @@ By how much must we improve the CPI of FP instructions if we want the program to
 
 assume that new FP CPI is x, new time = (5e7 * x + 1.1e8 * 1 + 8e7 * 4 + 1.6e7 * 2) / 2 GHz = 0.128 s -> x is negtive, that's impossble.
 
-## 1.14.2 [10] <§1.10> (wrong answer)
+## 1.14.2 [10] <§1.10>
 By how much must we improve the CPI of L/S instructions if we want the program to run two times faster? 
 
 **A:** Assume that new L/S CPI is x, 0.128 s = (5e7 * 1 + 1.1e8 * 1 + 8e7 * x + 1.6e7 * 2) / 2 GHz -> x = 0.8
