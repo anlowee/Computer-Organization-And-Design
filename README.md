@@ -18,4 +18,6 @@ Include the abstract and note and homework.
 
 a test
 
+another test
+
 Copyright 2020~INF @WHU-HYHC-WXC
