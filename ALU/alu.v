@@ -7,7 +7,7 @@ module alu(a, b, opcode, c, d);
 
     reg[31:0] c;
     reg[2:0] d;
-    reg[5:0] ii; // a iterator
+    reg[6:0] ii; // a iterator
     reg[31:0] mul_a;  // mul number for a
     reg[31:0] mul_b;  // mul number for b
     reg[32:0] temp;
@@ -34,7 +34,7 @@ module alu(a, b, opcode, c, d);
                         d[0] = 1'b1;
                     else
                         d[0] = 1'b0;
-                    if (a[31] == 1'b1)
+                    if (c[31] == 1'b1)
                         d[2] = 1'b1;
                     else
                         d[2] = 1'b0;
@@ -52,7 +52,7 @@ module alu(a, b, opcode, c, d);
                         d[0] = 1'b1;
                     else
                         d[0] = 1'b0;
-                    if (a[31] == 1'b1)
+                    if (c[31] == 1'b1)
                         d[2] = 1'b1;
                     else
                         d[2] = 1'b0;
@@ -90,26 +90,37 @@ module alu(a, b, opcode, c, d);
                 end
             mul:
                 begin
-                    c = 0;
-                    // signed extend
-                    for (ii = 0; ii < 16; ii = ii + 1)
-                        mul_a[ii] = a[ii];
-                    for (ii = 16; ii < 32; ii = ii + 1)
-                        mul_a[ii] = a[15];
-                    for (ii = 0; ii < 16; ii = ii + 1)
-                        mul_b[ii] = b[ii];
-                    for (ii = 16; ii < 32; ii = ii + 1)
-                        mul_b[ii] = b[15];
+                    if (a[31])
+                        mul_a = ~(a[31:0] - 1'b1);
+                    else 
+                        mul_a = a;
+                    if (b[31])
+                        mul_b = ~(b[31:0] - 1'b1);
+                    else 
+                        mul_b = b;
+                    d[2] = a[31]^b[31];
+                    mul_temp = 0;
                     // do mutiply
                     for (ii = 0; ii < 32; ii = ii + 1)
                         if (mul_b[ii])
-                            c = c + (mul_a << (ii));
+                            mul_temp = mul_temp + (mul_a << (ii));
+                    // judge is overflow
+                    d[1] = 1'b0;
+                    for (ii = 31; ii < 64; ii = ii + 1)
+                        if (mul_temp[ii])
+                            d[1] = 1'b1;
+                    for (ii = 0; ii < 32; ii = ii + 1)
+                        c[ii] = mul_temp[ii];
                     if (c == 32'b0000_0000_0000_0000_0000_0000_0000_0000)
                         d[0] = 1'b1;
                     else
                         d[0] = 1'b0;
-                    d[2] = mul_a[31] ^ mul_b[31];
-                    d[1] = 1'bz;  // 16 bits multiply never overflow 32 bits
+                    // if result is negtive, transfer c into negtive
+                    if (d[2])
+                        begin
+                            c = ~c;
+                            c = c + 1;
+                        end
                 end
             andd:
                 begin
