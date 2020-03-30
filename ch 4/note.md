@@ -8,3 +8,12 @@ slt一位数的情况：
 
 slt多位数的情况：
 ![slt](slt多位数的符号位.jpg)
+
+Set-reset latch:
+![rsl](latch.png)
+其中，第二张图在clock高电平时与D一致，低电平时保持。
+
+latch电平触发，flipflop边沿触发
+
+R型指令处理图：
+![r](R指令处理.jpg)
