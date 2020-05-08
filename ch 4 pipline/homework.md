@@ -215,25 +215,41 @@ Show a pipeline execution diagram for the third iteration of this loop, from the
 **A:**
 Since when the third iteration is excuting, the first iteration has been done. So we consider from the second iteration to the forth iteration. The multi-cycle pipline diagram like this:<br>
 ```
-IF  ID  EX  MEM WB
-    IF  ID  **  EX  MEM WB
-        IF  **  ID  **  EX  MEM WB
-                IF  **  ID  **  EX  MEM WB
+IF  **  ID  EX  MEM WB
+        IF  ID  **  EX  MEM WB
+            IF  **  ID  EX  MEM WB
+                    IF  ID  **  EX  MEM WB
                         IF  **  ID  **  EX  MEM WB      # the second iteration end
                                 IF  **  ID  EX  MEM WB
                                         IF  ID  **  EX  MEM WB
-                                            IF  **  ID  **  EX  MEM WB
-                                                    IF  **  ID  **  EX  MEM WB
-                                                            IF  **  ID  **  EX  MEM WB      # the third iteration end
-                                                                    IF  **  ID  EX  MEM WB
-                                                                            IF  ID  **  EX  MEM WB
-                                                                                IF  **  ID  **  EX  MEM WB
+                                            IF  **  ID  EX  MEM WB
+                                                    IF  ID  **  EX  MEM WB
+                                                        IF  **  ID  **  EX  MEM WB      # the third iteration end
+                                                                IF  **  ID  EX  MEM WB
+                                                                        IF  ID  **  EX  MEM WB
+                                                                            IF  **  ID  EX  MEM WB
+                                                                                    IF  ID  **  EX  MEM WB
+                                                                                        IF  **  ID  **  EX  MEM WB
 ``` 
+Thus, the operations during third cycle are:
+```
+WB
+EX  MEM WB
+ID  **  EX  MEM WB
+IF  **  ID  EX  MEM WB      # third iteration start
+        IF  ID  **  EX  MEM WB
+            IF  **  ID  EX  MEM WB
+                    IF  ID  **  EX  MEM WB
+                        IF  **  ID  **  EX  MEM WB      # third iteration end
+                                IF  **  ID  EX  MEM
+                                        IF  ID  **  
+                                            IF  **
+```
 
 ## 4.11.2 [10] <§4.6> 
 How often (as a percentage of all cycles) do we have a cycle in which all five pipeline stages are doing useful work?
 
-**A:**
+**A:** According to the above diagram, no stage in pipline keep working during these time.
 
 # 4.13 
 This exercise is intended to help you understand the relationship between forwarding, hazard detection, and ISA design. Problems in this exercise refer to the following sequence of instructions, and assume that it is executed on a 5-stage pipelined datapath:<br>
@@ -249,70 +265,216 @@ sw  r3, 0(r5)
 If there is no forwarding or hazard detection, insert nops to ensure correct execution.
 
 **A:**
+There are three data dependencies between I1 and I2, between I2 and I4, between I4 and I5.<br>
+```
+add r5, r2, r1 
+nop
+nop
+lw  r3, 4(r5) 
+lw  r2, 0(r2) 
+nop
+or  r3, r5, r3 
+nop
+nop
+sw  r3, 0(r5)
+```
 
 ## 4.13.2 [10] <§4.7> 
-Repeat 4.13.1 but now use nops only when a hazard cannot be avoided by changing or rearranging these instructions. You can assume register R7 can be used to hold temporary values in your modifi ed code. 
+Repeat 4.13.1 but now use nops only when a hazard cannot be avoided by changing or rearranging these instructions. You can assume register R7 can be used to hold temporary values in your modified code. 
 
 **A:**
+Since there is no data dependencies between I1 and I3, so I3 can be executed earlier. The rest of instructions cannot be modified.<br>
+```
+add r5, r2, r1
+lw  r2, 0(r2)  
+lw  r3, 4(r5) 
+or  r3, r5, r3 
+sw  r3, 0(r5)
+```
+Add nop:<br>
+```
+add r5, r2, r1
+lw  r2, 0(r2) 
+nop 
+lw  r3, 4(r5) 
+nop
+nop
+or  r3, r5, r3 
+nop
+nop
+sw  r3, 0(r5)
+```
 
 ## 4.13.3 [10] <§4.7> 
 If the processor has forwarding, but we forgot to implement the hazard detection unit, what happens when this code executes? 
 
-**A:**
+**A:** Due to that the stalling is controlled by hazard detection unit, so without hazard detection unit, there is no stalling. So if `lw` make a RAW hazard with following instruction, it needs hazard detection unit to lock PC and IF/ID register and make control signal with full-zero to remain the current status. But in these code, there is no such a load instruction RAW hazard, although without hazard detection unit, it still works. 
 
 ## 4.13.4 [20] <§4.7> 
 If there is forwarding, for the first five cycles during the execution of this code, specify which signals are asserted in each cycle by hazard detection and forwarding units in Figure 4.60. 
 
-**A:**
+**A:** With forwarding, the first 5 cycles diagram like this:<br>
+```
+IF  ID  EX  MEM WB       # add r5, r2, r1
+    IF  ID  EX  MEM      # lw  r3, 4(r5)
+        IF  ID  EX       # lw  r2, 0(r2)
+            IF  ID       # or  r3, r5, r3 
+                IF       # sw  r3, 0(r5)
+```
+Since there is no stalling, hazard detection's PC and IF/ID write signal is always **1**, and ID/EX zero signal is always **0**(use control signal by control unit). There is a `1.a` hazard between I1 and I2, a `2.b` hazard between I2 and I4. Thus, forwarding unit's ForwardA signal is **10**(rs = EX/MEM) at forth cycle and **01**(rt = MEM/WB) at sixth cycle and **00**(rs, rt = RF) at other cycles. The answer like this:<br>
+| PCWr | IF/IDWr | ID/EXZe | ForwardA | ForwardB |
+| ---- | ------- | ------- | -------- | -------- |
+| 1    | 1       | 0       | x        | x        |  
+| 1    | 1       | 0       | x        | x        |  
+| 1    | 1       | 0       | 00       | 00       |   
+| 1    | 1       | 0       | 10       | 00       |   
+| 1    | 1       | 0       | 00       | 00       |   
+Explain:
++ `x` means EX stage is not in use at this cycle.
++ `x` means EX stage is not in use at this cycle.
++ I1 is the first instruction.
++ In I2, r5(rs) can be got by EX/MEM register, so ForwardA is 10.
++ I3 has no hazard with instructions before.
 
 ## 4.13.5 [10] <§4.7> 
 If there is no forwarding, what new inputs and output signals do we need for the hazard detection unit in Figure 4.60? Using this instruction sequence as an example, explain why each signal is needed.
 
-**A:**
+**A:** With forwarding, only the previous load operation cause a stall(at most one stall), due to that the hazard detection unit work at ID stage, so it only needs to check load instruction at EX stage. Without forwarding, all RAW dependencies need stalls, and there are at most two stalls, so hazard detection unit should check both EX and MEM stage.<br> 
+Then, it needs more signal, for R-type instructions:<br>
+```
+// EX stage
+if (IF/ID.op = R-type and
+    (ID/EX.RegisterRd = IF/ID.RegisterRs or
+    ID/EX.RegisterRd = IF/ID.RegsiterRt))
+        stall pipline
+// MEM stage
+else if (IF/ID.op = R-Type and
+        (EX/MEM.RegsiterRd = IF/ID.RegisterRs or
+        EX/MEM.RegsiterRd = IF/ID.RegisterRt))
+            stall pipline
+```
+For loads intruction:<br>
+```
+// EX stage
+if (ID/EX.MemRead and 
+    (ID/EX.RegisterRt = IF/ID.RegisterRs) or
+    (ID/EX.RegisterRt = IF/ID.RegsiterRt))
+        stall pipline
+// MEM stage
+if (EX/MEM.MemRead and
+    (EX/MEM.RegisterRt = IF/ID.RegisterRs) or
+    (EX/MEM.RegsiterRt = IF/ID.RegsiterRt))
+        stall pipline
+```
+To sum up, we need add IF/ID.op, ID/EX.RegsiterRd, EX/MEM.MemRead, EX/MEM.RegsiterRt as new input signal. No output signal need to be added.
 
 ## 4.13.6 [20] <§4.7> 
-For the new hazard detection unit from 4.13.5, specify which output signals it asserts in each of the fi rst fi ve cycles during the execution of this code.
+For the new hazard detection unit from 4.13.5, specify which output signals it asserts in each of the first five cycles during the execution of this code.
 
-**A:**
+**A:** Without forwarding, the first 5 cycles diagram like this:><br>
+```
+IF  ID  EX  MEM WB       # add r5, r2, r1
+    IF  ID  **  **       # lw  r3, 4(r5)
+        IF  **  **       # lw  r2, 0(r2)
+```
+| PCWr | IF/IDWr | ID/EXZe |
+| ---- | ------- | ------- |
+| 1    | 1       | 0       | 
+| 1    | 1       | 0       |  
+| 1    | 1       | 0       |   
+| 0    | 0       | 1       |   
+| 0    | 0       | 1       |   
 
 # 4.14 
-This exercise is intended to help you understand the relationship between delay slots, control hazards, and branch execution in a pipelined processor. In this exercise, we assume that the following MIPS code is executed on a pipelined processor with a 5-stage pipeline, full forwarding, and a predict-taken branch predictor:                   
+This exercise is intended to help you understand the relationship between delay slots, control hazards, and branch execution in a pipelined processor. In this exercise, we assume that the following MIPS code is executed on a pipelined processor with a 5-stage pipeline, full forwarding, and a predict-taken branch predictor:<br>
+```
         lw r2, 0(r1) 
 label1: beq r2, r0, label2      # not taken once, then taken        
         lw r3, 0(r2)        
         beq r3, r0, label1      # taken        
         add r1, r3, r1 
 label2: sw r1, 0(r2) 
+```
 
 ## 4.14.1 [10] <§4.8> 
 Draw the pipeline execution diagram for this code, assuming there are no delay slots and that branches execute in the EX stage. 
 
 **A:**
+```
+IF  ID  EX  MEM WB                                          # lw r2, 0(r1)
+    IF  ID  **  EX  MEM WB                                  # beq r2, r0, label2       
+                    IF  ID  EX  MEM WB                      # lw r3, 0(r2)
+                        IF  ID  **  EX  MEM WB              # beq r3, r0, label1
+                            IF  **  ID  EX  MEM WB          # beq r2, r0, label2
+                                    IF  ID  EX  MEM WB      # sw r1, 0(r2)
+```
 
 ## 4.14.2 [10] <§4.8> 
 Repeat 4.14.1, but assume that delay slots are used. In the given code, the instruction that follows the branch is now the delay slot instruction for that branch. 
 
 **A:**
+```
+IF  ID  EX  MEM WB                                              # lw r2, 0(r1)
+    IF  ID  **  EX  MEM WB                                      # beq r2, r0, label2       
+        IF  **  ID  EX  MEM WB                                  # lw r3, 0(r2)
+                IF  ID  **  EX  MEM WB                          # beq r3, r0, label1
+                    IF  **  ID  EX  MEM WB                      # add r1, r3, r1
+                            IF  ID  EX  MEM WB                  # beq r2, r0, label2
+                                IF  ID  EX  MEM WB              # lw r3, 0(r2)
+                                    IF  ID  EX  MEM WB          # sw r1, 0(r2)
+```
 
 ## 4.14.3 [20] <§4.8> 
 One way to move the branch resolution one stage earlier is to not need an ALU operation in conditional branches. Th e branch instructions would be “bez rd,label” and “bnez rd,label”, and it would branch if the register has and does not have a zero value, respectively. Change this code to use these branch instructions instead of beq. You can assume that register R8 is available for you to use as a temporary register, and that an seq (set if equal) R-type instruction can be used.
-366 Chapter 4 The Processor
-Section 4.8 describes how the severity of control hazards can be reduced by moving branch execution into the ID stage. Th is approach involves a dedicated comparator in the ID stage, as shown in Figure 4.62. However, this approach potentially adds to the latency of the ID stage, and requires additional forwarding logic and hazard detection. 
 
 **A:**
+Since r0 is $0 = 0, so:<br>
+```
+        lw r2, 0(r1) 
+label1: bez r2, label2      # not taken once, then taken        
+        lw r3, 0(r2)        
+        bez r3, label1      # taken        
+        add r1, r3, r1 
+label2: sw r1, 0(r2) 
+```
+
+<br>
+Section 4.8 describes how the severity of control hazards can be reduced by moving branch execution into the ID stage. Th is approach involves a dedicated comparator in the ID stage, as shown in Figure 4.62. However, this approach potentially adds to the latency of the ID stage, and requires additional forwarding logic and hazard detection. 
 
 ## 4.14.4 [10] <§4.8> 
 Using the fi rst branch instruction in the given code as an example, describe the hazard detection logic needed to support branch execution in the ID stage as in Figure 4.62. Which type of hazard is this new logic supposed to detect? 
 
-**A:**
+**A:** Since branch instructions' ID stage needs both two operators, so there must be stalls after R-type and loads instruction due to the data hazard. For the previous R-type instruction, it needs to check at EX stage, if R-type's result is used in branch instruction. For the previous(or the second-previous) load instruction, it needs to check at EX stage and MEM stage, if load's destination is used in branch instruction.
 
 ## 4.14.5 [10] <§4.8> 
 For the given code, what is the speedup achieved by moving branch execution into the ID stage? Explain your answer. In your speedup calculation, assume that the additional comparison in the ID stage does not aff ect clock cycle time. 
 
 **A:**
+```
+IF  ID  EX  MEM WB                                              # lw r2, 0(r1)
+    IF  **  **  ID  EX  MEM WB                                  # beq r2, r0, label2       
+                    IF  ID  EX  MEM WB                          # lw r3, 0(r2)
+                        IF  **  **  ID  EX  MEM WB              # beq r3, r0, label1
+                                    IF  ID  EX  MEM WB          # beq r2, r0, label2
+                                        IF  ID  EX  MEM WB      # sw r1, 0(r2)
+```
+The speed-up ratio is `14 / 15 = 0.93`.
 
 ## 4.14.6 [10] <§4.8> 
-Using the fi rst branch instruction in the given code as an example, describe the forwarding support that must be added to support branch execution in the ID stage. Compare the complexity of this new forwarding unit to the complexity of the existing forwarding unit in Figure 4.62.
+Using the first branch instruction in the given code as an example, describe the forwarding support that must be added to support branch execution in the ID stage. Compare the complexity of this new forwarding unit to the complexity of the existing forwarding unit in Figure 4.62.
 
-**A:**
+**A:** 
+For R-type instruction:<br>
+```
+IF  ID  EX  MEM WB              # R-type
+    IF  **  ID  EX  MEM WB      # branch, which has a data dependency with previous instruction
+```
+So, it needs a EX/MEM to ID forwarding.<br>
+For load instruction:<br>
+```
+IF  ID  EX  MEM WB                  # load instruction
+    IF  **  **  ID  EX  MEM WB      # branch, which has a data dependency with previous instruction
+```
+Since WB write the data into RF at first-half clock, and ID read the data from RF at second-half clock, there is no need for an additional forwarding.
+
 
