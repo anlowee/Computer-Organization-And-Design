@@ -15,3 +15,9 @@ IF  ID  EX  MEM WB                                                  # lw  r1, 0(
 + Branch在哪一级执行则下一条指令IF必须在这一级之后，比如Branch在EX级执行，下一条指令的IF必须等到Branch的MEM级。
 + 对于IF  **  **这种阻塞，ID执行一半发现有问题，然后可以将原来从IF/ID写的内容重新写回IF/ID（可能要加控制信号，控制写入IF/ID的是来自PC的还是来自。
 + 旁路必须从流水线寄存器出来（alu的结果从EX/MEM寄存器出来），但是可以直接到其他原件或者其他流水线寄存器。
+
+# 课后习题疑问
++ 4.1.1， RFWr为1，MemWr为0，RegMux为0
++ 4.1.3，RFWr算output port？为什么sign-extend不算output没有用到的功能单元？
++ 4.2.2&4.2.3，为什么RF不需要增加一个input和一个output读取Rd的内容，为什么不需要增加一个ALUMux选择rt和rd的内容？
++ 4.8.6，beq为什么在多周期有四个周期？应该是没有MEM和WB
