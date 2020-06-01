@@ -274,7 +274,7 @@ How many blocks are replaced?
 ## 5.3.5 [10] <§5.3> 
 What is the hit ratio? 
 
-**A:** 3 / 12 = 0.25
+**A:** 4 / 12 = 0.3333
 
 ## 5.3.6 [20] <§5.3> 
 List the final state of the cache, with each valid entry represented as a record of <index, tag, data>.
@@ -334,16 +334,16 @@ Using the references from Exercise 5.2, show the final cache contents for a full
 The offset bits is 0(2^0).<br>
 With fully associative cache, the index bits is 0(2^0), and totally 8 ways.<br>
 So all address is tag.<br>
-| Word Address | Binary Address | Offset | Index | Tag | Hit/Miss | Content(the rightest, the last)        |
-| ------------ | -------------- | ------ | ----- | --- | -------- | -------------------------------------- |
-| 3            | 0000_0011      | NaN    | NaN   | 3   | M        | **3**                                  |
-| 180          | 1011_0100      | NaN    | NaN   | 180 | M        | 3,**180**                              |
-| 43           | 0010_1011      | NaN    | NaN   | 43  | M        | 3,180,**43**                           |
-| 2            | 0000_0010      | NaN    | NaN   | 2   | M        | 3,180,43,**2**                         |
-| 191          | 1011_1111      | NaN    | NaN   | 191 | M        | 3,180,43,2,**191**                     |
-| 88           | 0101_1000      | NaN    | NaN   | 88  | M        | 3,180,43,2,191,**88**                  |
-| 190          | 1011_1110      | NaN    | NaN   | 190 | M        | 3,180,43,2,191,88,**190**              |
-| 14           | 0000_1110      | NaN    | NaN   | 14  | M        | 3,180,43,2,191,88,190,**14**           |
+| Word Address | Binary Address | Offset | Index | Tag | Hit/Miss | Content(the rightest, the last)         |
+| ------------ | -------------- | ------ | ----- | --- | -------- | --------------------------------------- |
+| 3            | 0000_0011      | NaN    | NaN   | 3   | M        | **3**                                   |
+| 180          | 1011_0100      | NaN    | NaN   | 180 | M        | 3,**180**                               |
+| 43           | 0010_1011      | NaN    | NaN   | 43  | M        | 3,180,**43**                            |
+| 2            | 0000_0010      | NaN    | NaN   | 2   | M        | 3,180,43,**2**                          |
+| 191          | 1011_1111      | NaN    | NaN   | 191 | M        | 3,180,43,2,**191**                      |
+| 88           | 0101_1000      | NaN    | NaN   | 88  | M        | 3,180,43,2,191,**88**                   |
+| 190          | 1011_1110      | NaN    | NaN   | 190 | M        | 3,180,43,2,191,88,**190**               |
+| 14           | 0000_1110      | NaN    | NaN   | 14  | M        | 3,180,43,2,191,88,190,**14**            |
 | 181          | 1011_0101      | NaN    | NaN   | 181 | M        | ~~3,~~ 180,43,2,191,88,190,14,**181**   |
 | 44           | 0010_1100      | NaN    | NaN   | 44  | M        | ~~180,~~ 43,2,191,88,190,14,181,**44**  |
 | 186          | 1011_1010      | NaN    | NaN   | 186 | M        | ~~43,~~ 2,191,88,190,14,181,44,**186**  |
@@ -364,6 +364,7 @@ With LRU, the final content is the last 8 data, the final content:(word address)
 Using the references from Exercise 5.2, what is the miss rate for a fully associative cache with two-word blocks and a total size of 8 words, using LRU replacement? What is the miss rate using MRU (most recently used) replacement? Finally what is the best possible miss rate for this cache, given any replacement policy? 
 
 **A:**
+LRU:<br>
 Fully associative cache with two-word blocks and a total size of 8 words:<br>
 The offset bits is 1(2^1).<br>
 The index bits is 0(2^0), and totally 4 ways.<br>
@@ -375,13 +376,46 @@ The rest of address is tag.
 | 43           | 0010_101 1     | 1      | NaN   | 21  | M        | 1,90,**21**                     |
 | 2            | 0000_001 0     | 0      | NaN   | 1   | H        | 90,21,**1**                     |
 | 191          | 1011_111 1     | 1      | NaN   | 95  | M        | 90,21,1,**95**                  |
-| 88           | 0101_100 0     | 0      | NaN   | 44  | M        | ~~90,~~ 21,1,95,**44**           |
-| 190          | 1011_111 0     | 0      | NaN   | 95  | M        | 21,1,44,**95**                  |
-| 14           | 0000_111 0     | 0      | NaN   | 7   | M        | ~~21,~~ 1,44,95,**7**            |
-| 181          | 1011_010 1     | 1      | NaN   | 90  | M        | ~~1,~~ 44,95,7,**90**            |
-| 44           | 0010_110 0     | 0      | NaN   | 22  | M        | ~~44,~~ 95,7,90,**22**           |
-| 186          | 1011_101 0     | 0      | NaN   | 93  | M        | ~~95,~~ 7,90,22,**93**           |
-| 253          | 1111_110 1     | 1      | NaN   | 126 | M        | ~~7,~~ 90,22,93,**126**          |
+| 88           | 0101_100 0     | 0      | NaN   | 44  | M        | ~~90,~~ 21,1,95,**44**          |
+| 190          | 1011_111 0     | 0      | NaN   | 95  | H        | 21,1,44,**95**                  |
+| 14           | 0000_111 0     | 0      | NaN   | 7   | M        | ~~21,~~ 1,44,95,**7**           |
+| 181          | 1011_010 1     | 1      | NaN   | 90  | M        | ~~1,~~ 44,95,7,**90**           |
+| 44           | 0010_110 0     | 0      | NaN   | 22  | M        | ~~44,~~ 95,7,90,**22**          |
+| 186          | 1011_101 0     | 0      | NaN   | 93  | M        | ~~95,~~ 7,90,22,**93**          |
+| 253          | 1111_110 1     | 1      | NaN   | 126 | M        | ~~7,~~ 90,22,93,**126**         |
+The miss rate is 10 / 12 = 0.8333<br>
+MRU:<br>
+| Word Address | Binary Address | Offset | Index | Tag | Hit/Miss | Content(the rightest, the last) |
+| ------------ | -------------- | ------ | ----- | --- | -------- | ------------------------------- |
+| 3            | 0000_001 1     | 1      | NaN   | 1   | M        | **1**                           |
+| 180          | 1011_010 0     | 0      | NaN   | 90  | M        | 1,**90**                        |
+| 43           | 0010_101 1     | 1      | NaN   | 21  | M        | 1,90,**21**                     |
+| 2            | 0000_001 0     | 0      | NaN   | 1   | H        | 90,21,**1**                     |
+| 191          | 1011_111 1     | 1      | NaN   | 95  | M        | 90,21,1,**95**                  |
+| 88           | 0101_100 0     | 0      | NaN   | 44  | M        | 90,21,1,~~95,~~**44**           |
+| 190          | 1011_111 0     | 0      | NaN   | 95  | M        | 90,21,1,~~44,~~**95**           |
+| 14           | 0000_111 0     | 0      | NaN   | 7   | M        | 90,21,1,~~95,~~**7**            |
+| 181          | 1011_010 1     | 1      | NaN   | 90  | H        | 21,1,7,**90**                   |
+| 44           | 0010_110 0     | 0      | NaN   | 22  | M        | 21,1,7,~~90,~~**22**            |
+| 186          | 1011_101 0     | 0      | NaN   | 93  | M        | 21,1,7,~~22,~~**93**            |
+| 253          | 1111_110 1     | 1      | NaN   | 126 | M        | 21,1,7,~~93,~~**126**           |
+The miss rate is 10 / 12 = 0.8333<br>
+We can take MRH(Most Recently Hit) and MRU strategy both, then:
+| Word Address | Binary Address | Offset | Index | Tag | Hit/Miss | Content(the rightest, the last) |
+| ------------ | -------------- | ------ | ----- | --- | -------- | ------------------------------- |
+| 3            | 0000_001 1     | 1      | NaN   | 1   | M        | **1**                           |
+| 180          | 1011_010 0     | 0      | NaN   | 90  | M        | 1,**90**                        |
+| 43           | 0010_101 1     | 1      | NaN   | 21  | M        | 1,90,**21**                     |
+| 2            | 0000_001 0     | 0      | NaN   | 1   | H        | 90,21,**1**                     |
+| 191          | 1011_111 1     | 1      | NaN   | 95  | M        | 90,21,1,**95**                  |
+| 88           | 0101_100 0     | 0      | NaN   | 44  | M        | 90,21,~~1,~~ 95,**44**          |
+| 190          | 1011_111 0     | 0      | NaN   | 95  | H        | 90,21,44,**95**                 |
+| 14           | 0000_111 0     | 0      | NaN   | 7   | M        | 90,21,44,~~95,~~**7**           |
+| 181          | 1011_010 1     | 1      | NaN   | 90  | H        | 21,44,7,**90**                  |
+| 44           | 0010_110 0     | 0      | NaN   | 22  | M        | 21,44,7,~~90,~~**22**           |
+| 186          | 1011_101 0     | 0      | NaN   | 93  | M        | 21,44,7,~~22,~~**93**           |
+| 253          | 1111_110 1     | 1      | NaN   | 126 | M        | 21,44,7,~~93,~~**126**          |
+The hit ratio is 3 / 12 = 0.25, and there are only 3 pairs of tags which are correspondent, so it is the best hit ratio.
 
 ## 5.7.4 [10] <§5.4> 
 Multilevel caching is an important technique to overcome the limited amount of space that a fi rst level cache can provide while still maintaining its speed. Consider a processor with the following parameters:
