@@ -431,3 +431,298 @@ The origin memory access time is: 100 ns / (1 / 2 GHz) = 200 cycles, so:
 | origin             | 1.5 + 7% * 200 = 15.5 | 1.5 + 7% * 12 + 3.5% * 200 = 9.34  | 1.5 + 7% * 28 + 1.5% * 200 = 6.46 |
 | doubled            | 1.5 + 7% * 400 = 29.5 | 1.5 + 7% * 12 + 3.5% * 400 = 16.34 | 1.5 + 7% * 28 + 1.5% * 400 = 9.46 |
 | half               | 1.5 + 7% * 100 = 8.5  | 1.5 + 7% * 12 + 3.5% * 100 = 5.84  | 1.5 + 7% * 28 + 1.5% * 100 = 4.96 |
+
+# 5.11 
+As described in Section 5.7, virtual memory uses a page table to track the mapping of virtual addresses to physical addresses. Th is exercise shows how this table must be updated as addresses are accessed. Th e following data constitutes a stream of virtual addresses as seen on a system. Assume 4 KiB pages, a 4-entry fully associative TLB, and true LRU replacement. If pages must be brought in from disk, increment the next largest page number.
+```
+4669, 2227, 13916, 34587, 48870, 12608, 49225 
+```
+TLB:
+| Valid | Tag | Physical Page Number |
+| ----- | --- | -------------------- |
+| 1     | 11  | 12                   |
+| 1     | 7   | 4                    |
+| 1     | 3   | 6                    |
+| 0     | 4   | 9                    |
+Page table:
+| Valid | Physical Page or in Disk |
+| ----- | ------------------------ |
+| 1     | 5                        |
+| 0     | Disk                     |
+| 0     | Disk                     |
+| 1     | 6                        |
+| 1     | 9                        |
+| 1     | 11                       |
+| 0     | Disk                     |
+| 1     | 4                        |
+| 0     | Disk                     |
+| 0     | Disk                     |
+| 1     | 3                        |
+| 1     | 12                       |
+
+## 5.11.1 [10] <§5.7> 
+Given the address stream shown, and the initial TLB and page table states provided above, show the fi nal state of the system. Also list for each reference if it is a hit in the TLB, a hit in the page table, or a page fault. 
+
+**A:**
+| Address | Virtual Page | TLB H/M            | Valid             | Tag | Physical Page |
+| ------- | ------------ | ------------------ | ----------------- | --- | ------------- |
+| 4669    | 1            | TLB miss PT hit PF | 1                 | 11  | 12            |
+|         |              |                    | 1                 | 7   | 4             |
+|         |              |                    | 1                 | 3   | 6             |
+|         |              |                    | 1 (last access 0) | 1   | 13            |
+| 2227    | 0            | TLB miss PT hit    | 1 (last access 1) | 0   | 5             |
+|         |              |                    | 1                 | 7   | 4             |
+|         |              |                    | 1                 | 3   | 6             |
+|         |              |                    | 1 (last access 0) | 1   | 13            |
+| 13916   | 3            | TLB hit            | 1 (last access 1) | 0   | 5             |
+|         |              |                    | 1                 | 7   | 4             |
+|         |              |                    | 1 (last access 2) | 3   | 6             |
+|         |              |                    | 1 (last access 0) | 1   | 13            |
+| 34587   | 8            | TLB miss PT hit PF | 1 (last access 1) | 0   | 5             |
+|         |              |                    | 1 (last access 3) | 8   | 14            |
+|         |              |                    | 1 (last access 2) | 3   | 6             |
+|         |              |                    | 1 (last access 0) | 1   | 13            |
+| 48870   | 11           | TLB miss PT hit    | 1 (last access 1) | 0   | 5             |
+|         |              |                    | 1 (last access 3) | 8   | 14            |
+|         |              |                    | 1 (last access 2) | 3   | 6             |
+|         |              |                    | 1 (last access 4) | 11  | 12            |
+| 12608   | 3            | TLB hit            | 1 (last access 1) | 0   | 5             |
+|         |              |                    | 1 (last access 3) | 8   | 14            |
+|         |              |                    | 1 (last access 5) | 3   | 6             |
+|         |              |                    | 1 (last access 4) | 11  | 12            |
+| 49225   | 12           | TLB miss PT miss   | 1 (last access 6) | 12  | 15            |
+|         |              |                    | 1 (last access 3) | 8   | 14            |
+|         |              |                    | 1 (last access 5) | 3   | 6             |
+|         |              |                    | 1 (last access 4) | 11  | 12            |
+
+## 5.11.2 [15] <§5.7> 
+Repeat 5.11.1, but this time use 16 KiB pages instead of 4 KiB pages. What would be some of the advantages of having a larger page size? What are some of the disadvantages? 
+
+**A:**
+| Address | Virtual Page | TLB H/M             | Valid                 | Tag    | Physical Page |
+| ------- | ------------ | ------------------- | --------------------- | ------ | ------------- |
+| 4669    | **0**        | **TLB miss PT hit** | 1                     | 11     | 12            |
+|         |              |                     | 1                     | 7      | 4             |
+|         |              |                     | 1                     | 3      | 6             |
+|         |              |                     | 1 (last access 0)     | **0**  | **5**         |
+| 2227    | 0            | **TLB hit**         | **1**                 | **11** | **12**        |
+|         |              |                     | 1                     | 7      | 4             |
+|         |              |                     | 1                     | 3      | 6             |
+|         |              |                     | **1 (last access 1)** | **0**  | **5**         |
+| 13916   | **0**        | TLB hit             | **1**                 | **11** | **12**        |
+|         |              |                     | 1                     | 7      | 4             |
+|         |              |                     | **1**                 | 3      | 6             |
+|         |              |                     | **1 (last access 2)** | **0**  | **5**         |
+| 34587   | **2**        | TLB miss PT hit PF  | **1 (last access 3)** | **2**  | **13**        |
+|         |              |                     | **1**                 | **7**  | **4**         |
+|         |              |                     | **1**                 | 3      | 6             |
+|         |              |                     | **1 (last access 2)** | **0**  | **5**         |
+| 48870   | **2**        | **TLB hit**         | **1 (last access 4)** | **2**  | **13**        |
+|         |              |                     | **1**                 | **7**  | **4**         |
+|         |              |                     | **1**                 | 3      | 6             |
+|         |              |                     | **1 (last access 2)** | **0**  | **5**         |
+| 12608   | **0**        | TLB hit             | 1 (last access **4**) | **2**  | **13**        |
+|         |              |                     | **1**                 | **7**  | **4**         |
+|         |              |                     | **1**                 | 3      | 6             |
+|         |              |                     | **1 (last access 5)** | **0**  | **5**         |
+| 49225   | **3**        | **TLB hit**         | **1 (last access 4)** | **2**  | **13**        |
+|         |              |                     | **1**                 | **7**  | **4**         |
+|         |              |                     | **1 (last access 6)** | 3      | 6             |
+|         |              |                     | **1 (last access 5)** | **0**  | **5**         |
+
+## 5.11.3 [15] <§§5.4, 5.7> 
+Show the final contents of the TLB if it is 2-way set associative. Also show the contents of the TLB if it is direct mapped. Discuss the importance of having a TLB to high performance. How would virtual memory accesses be handled if there were no TLB? 
+
+**A:**
+When in the 2-way set associative:
+| Address | Virtual Page | Tag | Index | TLB H/M             | Valid                 | Tag   | Physical Page | Index |
+| ------- | ------------ | --- | ----- | ------------------- | --------------------- | ----- | ------------- | ----- |
+| 4669    | 1            | 0   | 1     | TLB miss PT hit PF  | 1                     | 11    | 12            | 0     |
+|         |              |     |       |                     | 1                     | 7     | 4             | 1     |
+|         |              |     |       |                     | 1                     | 3     | 6             | 0     |
+|         |              |     |       |                     | 1 (last access 0)     | **0** | 13            | 1     |
+| 2227    | 0            | 0   | 0     | TLB miss PT hit     | 1 (last access 1)     | 0     | 5             | 0     |
+|         |              |     |       |                     | 1                     | 7     | 4             | 1     |
+|         |              |     |       |                     | 1                     | 3     | 6             | 0     |
+|         |              |     |       |                     | 1 (last access 0)     | **0** | 13            | 1     |
+| 13916   | 3            | 1   | 1     | **TLB miss PT hit** | 1 (last access 1)     | 0     | 5             | 0     |
+|         |              |     |       |                     | **1 (last access 2)** | **1** | **6**         | 1     |
+|         |              |     |       |                     | **1**                 | 3     | 6             | 0     |
+|         |              |     |       |                     | 1 (last access 0)     | 1     | 13            | 1     |
+| 34587   | 8            | 4   | 0     | TLB miss PT hit PF  | 1 (last access 1)     | 0     | 5             | 0     |
+|         |              |     |       |                     | **1 (last access 2)** | **1** | **6**         | 1     |
+|         |              |     |       |                     | **1 (last access 3)** | **4** | **14**        | 0     |
+|         |              |     |       |                     | 1 (last access 0)     | 1     | 13            | 1     |
+| 48870   | 11           | 5   | 1     | TLB miss PT hit     | 1 (last access 1)     | 0     | 5             | 0     |
+|         |              |     |       |                     | **1 (last access 2)** | **1** | **6**         | 1     |
+|         |              |     |       |                     | **1 (last access 3)** | **4** | **14**        | 0     |
+|         |              |     |       |                     | 1 (last access 4)     | **5** | 12            | 1     |
+| 12608   | 3            | 1   | 1     | TLB hit             | 1 (last access 1)     | 0     | 5             | 0     |
+|         |              |     |       |                     | **1 (last access 5)** | **1** | **6**         | 1     |
+|         |              |     |       |                     | **1 (last access 3)** | **4** | **14**        | 0     |
+|         |              |     |       |                     | 1 (last access 4)     | **5** | 12            | 1     |
+| 49225   | 12           | 0   | 0     | TLB miss PT miss    | 1 (last access 6)     | **6** | 15            | 0     |
+|         |              |     |       |                     | **1 (last access 5)** | **1** | **6**         | 1     |
+|         |              |     |       |                     | **1 (last access 3)** | **4** | **14**        | 0     |
+|         |              |     |       |                     | 1 (last access 4)     | **5** | 12            | 1     |
+When in dirrect mapped:
+| Address | Virtual Page | Tag   | Index | TLB H/M             | Valid | Tag   | Physical Page | Index |
+| ------- | ------------ | ----- | ----- | ------------------- | ----- | ----- | ------------- | ----- |
+| 4669    | 1            | 0     | 1     | TLB miss PT hit PF  | 1     | 11    | 12            | 0     |
+|         |              |       |       |                     | 1     | **0** | **13**        | 1     |
+|         |              |       |       |                     | 1     | 3     | 6             | 2     |
+|         |              |       |       |                     | **0** | **4** | **9**         | 3     |
+| 2227    | 0            | 0     | 0     | TLB miss PT hit     | 1     | 0     | 5             | 0     |
+|         |              |       |       |                     | 1     | **0** | **13**        | 1     |
+|         |              |       |       |                     | 1     | 3     | 6             | 2     |
+|         |              |       |       |                     | **0** | **4** | **9**         | 3     |
+| 13916   | 3            | **0** | **3** | **TLB miss PT hit** | 1     | 0     | 5             | 0     |
+|         |              |       |       |                     | 1     | **0** | **13**        | 1     |
+|         |              |       |       |                     | 1     | 3     | 6             | 2     |
+|         |              |       |       |                     | 1     | **0** | **6**         | 3     |
+| 34587   | 8            | **2** | 0     | TLB miss PT hit PF  | 1     | **2** | **14**        | 0     |
+|         |              |       |       |                     | 1     | 0     | 13            | 1     |
+|         |              |       |       |                     | 1     | **3** | **6**         | 2     |
+|         |              |       |       |                     | 1     | **0** | **6**         | 3     |
+| 48870   | 11           | **2** | **3** | TLB miss PT hit     | 1     | **2** | **14**        | 0     |
+|         |              |       |       |                     | 1     | **0** | **13**        | 1     |
+|         |              |       |       |                     | 1     | **3** | **6**         | 2     |
+|         |              |       |       |                     | 1     | **2** | **12**        | 3     |
+| 12608   | 3            | **0** | **3** | **TLB miss PT hit** | 1     | **2** | **14**        | 0     |
+|         |              |       |       |                     | 1     | **0** | **13**        | 1     |
+|         |              |       |       |                     | 1     | **3** | **6**         | 2     |
+|         |              |       |       |                     | 1     | **0** | **6**         | 3     |
+| 49225   | 12           | **3** | 0     | TLB miss PT miss    | 1     | **3** | 15            | 0     |
+|         |              |       |       |                     | 1     | **0** | **13**        | 1     |
+|         |              |       |       |                     | 1     | **3** | **6**         | 2     |
+|         |              |       |       |                     | 1     | **0** | **6**         | 3     |
+
+## 5.11.4 [5] <§5.7> 
+There are several parameters that impact the overall size of the page table. Listed below are key page table parameters.
+| Virtual Address Size | Page Size | Page Table Entry Size |
+| -------------------- | --------- | --------------------- |
+| 32 bits              | 8 KiB     | 4 bytes               |
+Given the parameters shown above, calculate the total page table size for a system running 5 applications that utilize half of the memory available. 
+
+**A:** Due to that the system only utilize half of the memory available, and 8 KiB = 8192(2^13) B, so the tag bits is 32 - 13 = 19. And consider that each application has a page table, so there are 5*(2^(19 - 1 + 2)) = 5 MB
+
+## 5.11.5 [10] <§5.7> 
+Given the parameters shown above, calculate the total page table size for a system running 5 applications that utilize half of the memory available, given a two level page table approach with 256 entries. Assume each entry of the main page table is 6 bytes. Calculate the minimum and maximum amount of memory required. 
+
+**A:** Considering that in the two level page table approach, the 2^19 page table entries are divided into 256 segments are allocated on demand. Each of the second-level tables contain 2^(19 - 8) = 2048 entries, requiring 2048 * 4 = 8 KiB each and covering 2048 * 8 KiB * 16 MB of the virtual address space.
+Assume that half memory refers to 2 ^ 31 bytes, the minimum amount of memory required for the secondary table is 5 * (2^(31 - 24)) * 8 KiB = 5 MB. The first-level tables would require an additional 5 * 128 * 6 B = 3840 B. The maximum number will be 256 segments per application if all segments are activated. This would require 5 * 256 * 8 KiB = 10 MB for the second-level tables and 7680 bytes for the first-level tables.
+
+## 5.11.6 [10] <§5.7> 
+A cache designer wants to increase the size of a 4 KiB virtually indexed, physically tagged cache. Given the page size shown above, is it possible to make a 16 KiB direct-mapped cache, assuming 2 words per block? How would the designer increase the data size of the cache?
+
+**A:** It needs to make the cache 2-way associative to increase its size to 16 KB.
+
+# 5.12 
+In this exercise, we will examine space/time optimizations for page tables. Th e following list provides parameters of a virtual memory system.
+| Virtual Address (bits) | Physical DRAM Installed | Page Size | PTE Size (byte) |
+| ---------------------- | ----------------------- | --------- | --------------- |
+| 43                     | 16 GiB                  | 4 KiB     | 4               |
+
+## 5.12.1 [10] <§5.7> 
+For a single-level page table, how many page table entries (PTEs) are needed? How much physical memory is needed for storing the page table? 
+
+**A:** 2^(43 - 12(Page Size) + 2(PTE Size)) = 8(2^33) GB
+
+## 5.12.2 [10] <§5.7> 
+Using a multilevel page table can reduce the physical memory consumption of page tables, by only keeping active PTEs in physical memory. How many levels of page tables will be needed in this case? And how many memory references are needed for address translation if missing in TLB? 
+
+**A:** In this case, there are only 2 levels in need. When in a multilevel page table, if TLB get missing, it will access each level table to get the PTE. So in this case, it needs 2 times.
+
+## 5.12.3 [15] <§5.7> 
+An inverted page table can be used to further optimize space and time. How many PTEs are needed to store the page table? Assuming a hash table implementation, what are the common case and worst case numbers of memory references needed for servicing a TLB miss? 
+
+**A:** PTE = Hash-table-size + Collison-cost. When a TLB miss, in the common case, it only compare to the tag in hash table once, in the worst case, it needs to compare all items with the same tags in hash table.
+
+## 5.12.4 [5] <§5.7> 
+The following table shows the contents of a 4-entry TLB.
+| Entry-ID | Valid | VA Page | Modiﬁed | Protection | PA Page |
+| -------- | ----- | ------- | ------- | ---------- | ------- |
+| 1        | 1     | 140     | 1       | RW         | 30      |
+| 2        | 0     | 40      | 0       | RX         | 34      |
+| 3        | 1     | 200     | 1       | RO         | 32      |
+| 4        | 1     | 280     | 0       | RW         | 31      |
+Under what scenarios would entry 2’s valid bit be set to zero? 
+
+**A:** When the page is in the disk.
+
+## 5.12.5 [5] <§5.7> 
+What happens when an instruction writes to VA page 30? When would a soft ware managed TLB be faster than a hardware managed TLB? 
+
+**A:** It will occur a TLB miss. Consider that get the TLB entries cost a lot of time, so when the software can prefetch TLB entries, the TLB managed by the software is faster.
+
+## 5.12.6 [5] <§5.7> 
+What happens when an instruction writes to VA page 200?
+
+**A:** It will failed, because the target page is read-only that means it cannot be written.
+
+# 5.13 
+In this exercise, we will examine how replacement policies impact miss rate. Assume a 2-way set associative cache with 4 blocks. To solve the problems in this exercise, you may fi nd it helpful to draw a table like the one below, as demonstrated for the address sequence “0, 1, 2, 3, 4.”
+
+| Address of Memory Block Accessed | Hit or Miss | Evicted Block | Set 0  | Set 0  | Set 1  | Set 1  |
+| -------------------------------- | ----------- | ------------- | ------ | ------ | ------ | ------ |
+| 0                                | Miss        |               | Mem[0] |        |        |        |
+| 1                                | Miss        |               | Mem[0] |        | Mem[1] |        |
+| 2                                | Miss        |               | Mem[0] | Mem[2] | Mem[1] |        |
+| 3                                | Miss        |               | Mem[0] | Mem[2] | Mem[1] | Mem[3] |
+| 4                                | Miss        | 0             | Mem[4] | Mem[2] | Mem[1] | Mem[3] |
+| …                                |             |               |        |        |        |        |
+Consider the following address sequence:  0, 2, 4, 8, 10, 12, 14, 16, 0 
+
+## 5.13.1 [5] <§§5.4, 5.8> 
+Assuming an LRU replacement policy, how many hits does this address sequence exhibit? 
+
+**A:** 
+| Address of Memory Block Accessed | Hit or Miss | Evicted Block | Set 0   | Set 0   | Set 1 | Set 1 |
+| -------------------------------- | ----------- | ------------- | ------- | ------- | ----- | ----- |
+| 0                                | Miss        |               | Mem[0]  |         |       |       |
+| 2                                | Miss        |               | Mem[0]  | Mem[2]  |       |       |
+| 4                                | Miss        | 0             | Mem[4]  | Mem[2]  |       |       |
+| 8                                | Miss        | 1             | Mem[4]  | Mem[8]  |       |       |
+| 10                               | Miss        | 0             | Mem[10] | Mem[8]  |       |       |
+| 12                               | Miss        | 1             | Mem[10] | Mem[12] |       |       |
+| 14                               | Miss        | 0             | Mem[14] | Mem[12] |       |       |
+| 16                               | Miss        | 1             | Mem[14] | Mem[16] |       |       |
+| 0                                | Miss        | 0             | Mem[0]  | Mem[16] |       |       |
+Thus, 0 hit.
+
+## 5.13.2 [5] <§§5.4, 5.8> 
+Assuming an MRU (most recently used) replacement policy, how many hits does this address sequence exhibit? 
+
+**A:** 
+| Address of Memory Block Accessed | Hit or Miss | Evicted Block | Set 0  | Set 0   | Set 1 | Set 1 |
+| -------------------------------- | ----------- | ------------- | ------ | ------- | ----- | ----- |
+| 0                                | Miss        |               | Mem[0] |         |       |       |
+| 2                                | Miss        |               | Mem[0] | Mem[2]  |       |       |
+| 4                                | Miss        | 1             | Mem[0] | Mem[4]  |       |       |
+| 8                                | Miss        | 1             | Mem[0] | Mem[8]  |       |       |
+| 10                               | Miss        | 1             | Mem[0] | Mem[10] |       |       |
+| 12                               | Miss        | 1             | Mem[0] | Mem[12] |       |       |
+| 14                               | Miss        | 1             | Mem[0] | Mem[14] |       |       |
+| 16                               | Miss        | 1             | Mem[0] | Mem[16] |       |       |
+| 0                                | Hit         |               | Mem[0] | Mem[16] |       |       |
+Thus, 1 hit.
+
+## 5.13.3 [5] <§§5.4, 5.8> 
+Simulate a random replacement policy by fl ipping a coin. For example, “heads” means to evict the fi rst block in a set and “tails” means to evict the second block in a set. How many hits does this address sequence exhibit? 
+
+**A:** Only address 0 occure twice, so there is at most 1 hit, at least 0 hit.
+
+## 5.13.4 [10] <§§5.4, 5.8> 
+Which address should be evicted at each replacement to maximize the number of hits? How many hits does this address sequence exhibit if you follow this “optimal” policy? 
+
+**A:** According to 5.13.2, take MRU stategy, it has 1 hit.
+
+## 5.13.5 [10] <§§5.4, 5.8> 
+Describe why it is difficult to implement a cache replacement policy that is optimal for all address sequences. 
+
+**A:** Because there are so many possiblity of the future address sequence, which cache cannot predict. The policy may work well now, but much more worse in the future.
+
+## 5.13.6 [10] <§§5.4, 5.8> 
+Assume you could make a decision upon each memory reference whether or not you want the requested address to be cached. What impact could this have on miss rate?
+
+**A:** Just same as above problems, you can only make decision according to current situation, so you may manage well at present but get a worse miss rate in the future.
