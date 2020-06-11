@@ -54,16 +54,17 @@ The final instruction sqquence like this:<br>
 or r1, r2, r3
 or r2, r1, r4
 nop
+nop
 or r1, r1, r2
 ```
 
 ## 4.9.6 [10] <§4.5> 
 What is the total execution time of this instruction sequence with only ALU-ALU forwarding? What is the speedup over a no-forwarding pipeline?
 
-**A:** With only ALU-ALU forwarding, it costs `5 + 1 + 2 = 8` cycles, namely, `8 * 290ps = 2320ps`. The acceleateing ratio is `2320 / 2100 = 1.10`.
+**A:** With only ALU-ALU forwarding, it costs `5 + 1 + 1 + 2 = 9` cycles, namely, `9 * 290ps = 2610ps`. The acceleateing ratio is `2750 / 2610 = 1.05`.
 
 # 4.10 
-In this exercise, we examine how resource hazards, control hazards, and Instruction Set Architecture (ISA) design can aff ect pipelined execution. Problems in this exercise refer to the following fragment of MIPS code:<br>    
+In this exercise, we examine how resource hazards, control hazards, and Instruction Set Architecture (ISA) design can affect pipelined execution. Problems in this exercise refer to the following fragment of MIPS code:<br>    
 ```
 sw  r16, 12(r6)    
 lw  r16, 8(r6)    
