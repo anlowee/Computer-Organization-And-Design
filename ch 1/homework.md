@@ -1,5 +1,5 @@
 # 1.5 [4] <§1.6> 
-Consider three diff erent processors P1, P2, and P3 executing the same instruction set. P1 has a 3 GHz clock rate and a CPI of 1.5. P2 has a 2.5 GHz clock rate and a CPI of 1.0. P3 has a 4.0 GHz clock rate and has a CPI of 2.2.
+Consider three different processors P1, P2, and P3 executing the same instruction set. P1 has a 3 GHz clock rate and a CPI of 1.5. P2 has a 2.5 GHz clock rate and a CPI of 1.0. P3 has a 4.0 GHz clock rate and has a CPI of 2.2.
 
 **a**. Which processor has the highest performance expressed in instructions per second? 
 
@@ -11,7 +11,7 @@ Consider three diff erent processors P1, P2, and P3 executing the same instructi
 
 so **P2** is the fastest.
 
-b. If the processors each execute a program in 10 seconds, fi nd the number of cycles and the number of instructions.
+b. If the processors each execute a program in 10 seconds, find the number of cycles and the number of instructions.
 
 **A:** According to question a:
 
@@ -38,7 +38,7 @@ so rate must be improved 71%,
 + P3: 4 + 4 * 71% = 6.84 GHz
 
  # 1.6 [20] <§1.6> 
- Consider two different implementations of the same instruction set architecture. Th e instructions can be divided into four classes according to their CPI (class A, B, C, and D). P1 with a clock rate of 2.5 GHz and CPIs of 1, 2, 3, and 3, and P2 with a clock rate of 3 GHz and CPIs of 2, 2, 2, and 2. Given a program with a dynamic instruction count of 1.0E6 instructions divided into classes as follows: 10% class A, 20% class B, 50% class C, and 20% class D, which implementation is faster? 
+ Consider two different implementations of the same instruction set architecture. The instructions can be divided into four classes according to their CPI (class A, B, C, and D). P1 with a clock rate of 2.5 GHz and CPIs of 1, 2, 3, and 3, and P2 with a clock rate of 3 GHz and CPIs of 2, 2, 2, and 2. Given a program with a dynamic instruction count of 1.0E6 instructions divided into classes as follows: 10% class A, 20% class B, 50% class C, and 20% class D, which implementation is faster? 
  
  **a**. What is the global CPI for each implementation? 
  
@@ -186,14 +186,14 @@ A common fallacy is to use MIPS (millions of instructions per second) to compare
 although MIPS of P1 > MIPS of P2, P2 CPU time is smaller.
 
 ## 1.12.4 [10] <§1.10> 
-Another common performance fi gure is MFLOPS (millions of fl oating-point operations per second), defi ned as MFLOPS = No. FP operations / (execution time × 1E6) but this fi gure has the same problems as MIPS. Assume that 40% of the instructions executed on both P1 and P2 are fl oating-point instructions.  Find the MFLOPS fi gures for the programs.
+Another common performance figure is MFLOPS (millions of fl oating-point operations per second), defined as MFLOPS = No. FP operations / (execution time × 1E6) but this figure has the same problems as MIPS. Assume that 40% of the instructions executed on both P1 and P2 are floating-point instructions.  Find the MFLOPS figures for the programs.
 
 **A:** According to question 1.12.1:
 + P1: MFLOPS = 5.0e9 * 40% / (1.125e6) = 1.78e3
 + P2: MFLOPS = 1.0e9 * 40% / (0.25e6) = 1.60e3
 
 # 1.14 
-Assume a program requires the execution of 50 × 10E6 FP instructions, 110 × 10E6 INT instructions, 80 × 10E6 L/S instructions, and 16 × 10E6 branch instructions.  Th e CPI for each type of instruction is 1, 1, 4, and 2, respectively. Assume that the processor has a 2 GHz clock rate. 
+Assume a program requires the execution of 50 × 10E6 FP instructions, 110 × 10E6 INT instructions, 80 × 10E6 L/S instructions, and 16 × 10E6 branch instructions.  The CPI for each type of instruction is 1, 1, 4, and 2, respectively. Assume that the processor has a 2 GHz clock rate. 
 
 ## 1.14.1 [10] <§1.10> 
 By how much must we improve the CPI of FP instructions if we want the program to run two times faster? 
