@@ -33,7 +33,8 @@ sw   $t0, 0($t1)
 ```
 
 
-# 2.25 Th e following instruction is not included in the MIPS instruction set:
+# 2.25 
+The following instruction is not included in the MIPS instruction set:
 ```
 rpt $t2, loop # if(R[rs]>0) R[rs]=R[rs]−1, PC=PC+4+BranchAddr
 ```
@@ -114,7 +115,7 @@ TRYUP:  ll   $t0, 0($a1)        # atomic load shvar
         lw   $t1, 0($a2)        # load x
         slt  $t2, $t0, $t1      
         bne  $t2, $zero, ENDUP  # if shvar > x, do nothing
-        sc   $t1, 0($a1)        # if successful, set shvar, and $t0 -> 1, else $t0 -> 0
+        sc   $t1, 0($a1)        # if successful, set shvar, and $t1 -> 1, else $t1 -> 0
         beq  $t1, $zero, TRYUP  # update failed, try again
 ENDUP:
 ```

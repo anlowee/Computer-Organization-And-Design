@@ -101,7 +101,7 @@ Consider that there are 8(2^3) cache word blocks with 2(2^1) words size, so the 
 | 253          | 1111 110 1     | 1      | 6     | 15  | M        |
 
 ## 5.2.3 [20] <§§5.3, 5.4> 
-You are asked to optimize a cache design for the given references. Th ere are three direct-mapped cache designs possible, all with a total of 8 words of data: C1 has 1-word blocks, C2 has 2-word blocks, and C3 has 4-word blocks. In terms of miss rate, which cache design is the best? If the miss stall time is 25 cycles, and C1 has an access time of 2 cycles, C2 takes 3 cycles, and C3 takes 5 cycles, which is the best cache design? 
+You are asked to optimize a cache design for the given references. There are three direct-mapped cache designs possible, all with a total of 8 words of data: C1 has 1-word blocks, C2 has 2-word blocks, and C3 has 4-word blocks. In terms of miss rate, which cache design is the best? If the miss stall time is 25 cycles, and C1 has an access time of 2 cycles, C2 takes 3 cycles, and C3 takes 5 cycles, which is the best cache design? 
 
 **A:**
 C1 has 8(2^3) cache word blocks with 1-word size, so there is no offset, WordAddr[2:0] is index, the rest of WordAddr is tag.<br>
@@ -280,12 +280,12 @@ What is the hit ratio?
 List the final state of the cache, with each valid entry represented as a record of <index, tag, data>.
 
 **A:**
-| Index | Tag | Data           |
-| ----- | --- | -------------- |
-| 0     | 3   | mem[3103:3072] |
-| 4     | 2   | mem[2211:2180] |
-| 5     | 0   | mem[191:160]   |
-| 7     | 0   | mem[263:232]   |
+| Index | Tag | Data      |
+| ----- | --- | --------- |
+| 0     | 3   | mem[3100] |
+| 4     | 2   | mem[2180] |
+| 5     | 0   | mem[180]  |
+| 7     | 0   | mem[232]  |
 
 # 5.7 
 This exercise examines the impact of different cache designs, specifically comparing associative caches to the direct-mapped caches from Section 5.4. For these exercises, refer to the address stream shown in Exercise 5.2. 
@@ -418,7 +418,7 @@ We can take MRH(Most Recently Hit) and MRU strategy both, then:
 The hit ratio is 3 / 12 = 0.25, and there are only 3 pairs of tags which are correspondent, so it is the best hit ratio.
 
 ## 5.7.4 [10] <§5.4> 
-Multilevel caching is an important technique to overcome the limited amount of space that a fi rst level cache can provide while still maintaining its speed. Consider a processor with the following parameters:
+Multilevel caching is an important technique to overcome the limited amount of space that a first level cache can provide while still maintaining its speed. Consider a processor with the following parameters:
 | Base CPI, No Memory Stalls | Processor Speed | Main Memory Access Time | First Level Cache MissRate per Instruction | Second Level Cache, Direct-Mapped Speed | Global Miss Rate with Second Level Cache, Direct-Mapped | Second Level Cache, Eight-Way Set Associative Speed | Global Miss Rate with Second Level Cache, Eight-Way Set Associative |
 | -------------------------- | --------------- | ----------------------- | ------------------------------------------ | --------------------------------------- | ------------------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------- |
 | 1.5                        | 2 GHz           | 100 ns                  | 7%                                         | 12 cycles                               | 3.5%                                                    | 28 cycles                                           | 1.5%                                                                |
@@ -433,7 +433,7 @@ The origin memory access time is: 100 ns / (1 / 2 GHz) = 200 cycles, so:
 | half               | 1.5 + 7% * 100 = 8.5  | 1.5 + 7% * 12 + 3.5% * 100 = 5.84  | 1.5 + 7% * 28 + 1.5% * 100 = 4.96 |
 
 # 5.11 
-As described in Section 5.7, virtual memory uses a page table to track the mapping of virtual addresses to physical addresses. Th is exercise shows how this table must be updated as addresses are accessed. Th e following data constitutes a stream of virtual addresses as seen on a system. Assume 4 KiB pages, a 4-entry fully associative TLB, and true LRU replacement. If pages must be brought in from disk, increment the next largest page number.
+As described in Section 5.7, virtual memory uses a page table to track the mapping of virtual addresses to physical addresses. This exercise shows how this table must be updated as addresses are accessed. The following data constitutes a stream of virtual addresses as seen on a system. Assume 4 KiB pages, a 4-entry fully associative TLB, and true LRU replacement. If pages must be brought in from disk, increment the next largest page number.
 ```
 4669, 2227, 13916, 34587, 48870, 12608, 49225 
 ```
@@ -461,7 +461,7 @@ Page table:
 | 1     | 12                       |
 
 ## 5.11.1 [10] <§5.7> 
-Given the address stream shown, and the initial TLB and page table states provided above, show the fi nal state of the system. Also list for each reference if it is a hit in the TLB, a hit in the page table, or a page fault. 
+Given the address stream shown, and the initial TLB and page table states provided above, show the final state of the system. Also list for each reference if it is a hit in the TLB, a hit in the page table, or a page fault. 
 
 **A:**
 | Address | Virtual Page | TLB H/M            | Valid             | Tag | Physical Page |
@@ -612,13 +612,8 @@ Given the parameters shown above, calculate the total page table size for a syst
 **A:** Considering that in the two level page table approach, the 2^19 page table entries are divided into 256 segments are allocated on demand. Each of the second-level tables contain 2^(19 - 8) = 2048 entries, requiring 2048 * 4 = 8 KiB each and covering 2048 * 8 KiB * 16 MB of the virtual address space.
 Assume that half memory refers to 2 ^ 31 bytes, the minimum amount of memory required for the secondary table is 5 * (2^(31 - 24)) * 8 KiB = 5 MB. The first-level tables would require an additional 5 * 128 * 6 B = 3840 B. The maximum number will be 256 segments per application if all segments are activated. This would require 5 * 256 * 8 KiB = 10 MB for the second-level tables and 7680 bytes for the first-level tables.
 
-## 5.11.6 [10] <§5.7> 
-A cache designer wants to increase the size of a 4 KiB virtually indexed, physically tagged cache. Given the page size shown above, is it possible to make a 16 KiB direct-mapped cache, assuming 2 words per block? How would the designer increase the data size of the cache?
-
-**A:** It needs to make the cache 2-way associative to increase its size to 16 KB.
-
 # 5.12 
-In this exercise, we will examine space/time optimizations for page tables. Th e following list provides parameters of a virtual memory system.
+In this exercise, we will examine space/time optimizations for page tables. The following list provides parameters of a virtual memory system.
 | Virtual Address (bits) | Physical DRAM Installed | Page Size | PTE Size (byte) |
 | ---------------------- | ----------------------- | --------- | --------------- |
 | 43                     | 16 GiB                  | 4 KiB     | 4               |
@@ -661,7 +656,7 @@ What happens when an instruction writes to VA page 200?
 **A:** It will failed, because the target page is read-only that means it cannot be written.
 
 # 5.13 
-In this exercise, we will examine how replacement policies impact miss rate. Assume a 2-way set associative cache with 4 blocks. To solve the problems in this exercise, you may fi nd it helpful to draw a table like the one below, as demonstrated for the address sequence “0, 1, 2, 3, 4.”
+In this exercise, we will examine how replacement policies impact miss rate. Assume a 2-way set associative cache with 4 blocks. To solve the problems in this exercise, you may find it helpful to draw a table like the one below, as demonstrated for the address sequence “0, 1, 2, 3, 4.”
 
 | Address of Memory Block Accessed | Hit or Miss | Evicted Block | Set 0  | Set 0  | Set 1  | Set 1  |
 | -------------------------------- | ----------- | ------------- | ------ | ------ | ------ | ------ |
