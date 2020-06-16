@@ -22,7 +22,7 @@ References to which variables exhibit spatial locality?
 **A:** A[I][J]. Because A[I][J + 1], A[I][J + 2]... are adjacent and will be referred soon.
 
 ## 5.1.4 [10] <§5.1> 
-Locality is affected by both the reference order and data layout. The same computation can also be written below in Matlab, which diff ers from C by storing matrix elements within the same column contiguously in memory.
+Locality is affected by both the reference order and data layout. The same computation can also be written below in Matlab, which differs from C by storing matrix elements within the same column contiguously in memory.
 ```
 for I=1:8  
     for J=1:8000    
@@ -241,7 +241,7 @@ How many entries does the cache have?
 **A:** 2^(9 - 5 + 1) = 32 blocks
 
 ## 5.3.3 [5] <§5.3> 
-What is the ratio between total bits required for such a cache implementation over the data storage bits? Starting from power on, the following byte-addressed cache references are recorded.
+What is the ratio between total bits required for such a cache implementation over the data storage bits?
 
 **A:**
 total bits: 32(blocks) * ((8 * 32)(block size) + (31 - 10 + 1)(tag) + 1(valid)) = 8928<br>
@@ -249,6 +249,7 @@ data storage bits: 32(blocks) * (8 * 32)(block size) = 8192<br>
 ratio: 8928 / 8192 = 1.09
 
 ## 5.3.4 [10] <§5.3> 
+Starting from power on, the following byte-addressed cache references are recorded.
 Address：
 ```
 0 4 16 132 232 160 1024 30 140 3100 180 2180

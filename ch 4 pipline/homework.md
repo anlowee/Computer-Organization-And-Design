@@ -1,5 +1,5 @@
 # 4.9 
-In this exercise, we examine how data dependences aff ect execution in the basic 5-stage pipeline described in Section 4.5. Problems in this exercise refer to the following sequence of instructions: <br>
+In this exercise, we examine how data dependences affect execution in the basic 5-stage pipeline described in Section 4.5. Problems in this exercise refer to the following sequence of instructions: <br>
 ```
 or r1, r2, r3 
 or r2, r1, r4 
@@ -93,7 +93,7 @@ IF  ID  EX  MEM WB                                      # sw
 There are two **stalls** but not **NOP** after `beq`, because when `add` fetch instructions from memory, `lw` or `sw` is using it, so `add` must wait to `lw` and `sw` finish the visiting to memory. Although NOP can eliminated data hazard, but here NOP also needs to fetch instrution. As long as doing IF operation, it will crash with `lw` and `sw` in the only memory, so NOP can't help.
 
 ## 4.10.2 [20] <§4.5> 
-For this problem, assume that all branches are perfectly predicted (this eliminates all control hazards) and that no delay slots are used. If we change load/store instructions to use a register (without an off set) as the address, these instructions no longer need to use the ALU. As a result, MEM and EX stages can be overlapped and the pipeline has only 4 stages. Change this code to accommodate this changed ISA. Assuming this change does not aff ect clock clock cycle, what speedup is achieved in this instruction sequence? 
+For this problem, assume that all branches are perfectly predicted (this eliminates all control hazards) and that no delay slots are used. If we change load/store instructions to use a register (without an offset) as the address, these instructions no longer need to use the ALU. As a result, MEM and EX stages can be overlapped and the pipeline has only 4 stages. Change this code to accommodate this changed ISA. Assuming this change does not affect clock clock cycle, what speedup is achieved in this instruction sequence? 
 
 **A:**
 Since there's no control hazard and strcuture hazard and data hazard, so there's no need for stall or NOP.<br> 
@@ -239,12 +239,9 @@ EX  MEM WB
 ID  **  EX  MEM WB
 IF  **  ID  EX  MEM WB      # third iteration start
         IF  ID  **  EX  MEM WB
-            IF  **  ID  EX  MEM WB
-                    IF  ID  **  EX  MEM WB
-                        IF  **  ID  **  EX  MEM WB      # third iteration end
-                                IF  **  ID  EX  MEM
-                                        IF  ID  **  
-                                            IF  **
+            IF  **  ID  EX  MEM
+                    IF  ID  **  
+                        IF  **  
 ```
 
 ## 4.11.2 [10] <§4.6> 
@@ -426,7 +423,7 @@ IF  ID  EX  MEM WB                                              # lw r2, 0(r1)
 ```
 
 ## 4.14.3 [20] <§4.8> 
-One way to move the branch resolution one stage earlier is to not need an ALU operation in conditional branches. Th e branch instructions would be “bez rd,label” and “bnez rd,label”, and it would branch if the register has and does not have a zero value, respectively. Change this code to use these branch instructions instead of beq. You can assume that register R8 is available for you to use as a temporary register, and that an seq (set if equal) R-type instruction can be used.
+One way to move the branch resolution one stage earlier is to not need an ALU operation in conditional branches. The branch instructions would be “bez rd,label” and “bnez rd,label”, and it would branch if the register has and does not have a zero value, respectively. Change this code to use these branch instructions instead of beq. You can assume that register R8 is available for you to use as a temporary register, and that an seq (set if equal) R-type instruction can be used.
 
 **A:**
 Since r0 is $0 = 0, so:<br>
@@ -440,15 +437,15 @@ label2: sw r1, 0(r2)
 ```
 
 <br>
-Section 4.8 describes how the severity of control hazards can be reduced by moving branch execution into the ID stage. Th is approach involves a dedicated comparator in the ID stage, as shown in Figure 4.62. However, this approach potentially adds to the latency of the ID stage, and requires additional forwarding logic and hazard detection. 
+Section 4.8 describes how the severity of control hazards can be reduced by moving branch execution into the ID stage. This approach involves a dedicated comparator in the ID stage, as shown in Figure 4.62. However, this approach potentially adds to the latency of the ID stage, and requires additional forwarding logic and hazard detection. 
 
 ## 4.14.4 [10] <§4.8> 
-Using the fi rst branch instruction in the given code as an example, describe the hazard detection logic needed to support branch execution in the ID stage as in Figure 4.62. Which type of hazard is this new logic supposed to detect? 
+Using the first branch instruction in the given code as an example, describe the hazard detection logic needed to support branch execution in the ID stage as in Figure 4.62. Which type of hazard is this new logic supposed to detect? 
 
 **A:** Since branch instructions' ID stage needs both two operators, so there must be stalls after R-type and loads instruction due to the data hazard. For the previous R-type instruction, it needs to check at EX stage, if R-type's result is used in branch instruction. For the previous(or the second-previous) load instruction, it needs to check at EX stage and MEM stage, if load's destination is used in branch instruction.
 
 ## 4.14.5 [10] <§4.8> 
-For the given code, what is the speedup achieved by moving branch execution into the ID stage? Explain your answer. In your speedup calculation, assume that the additional comparison in the ID stage does not aff ect clock cycle time. 
+For the given code, what is the speedup achieved by moving branch execution into the ID stage? Explain your answer. In your speedup calculation, assume that the additional comparison in the ID stage does not affect clock cycle time. 
 
 **A:**
 ```

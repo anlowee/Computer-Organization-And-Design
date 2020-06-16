@@ -1,5 +1,5 @@
 # 4.3 
-When processor designers consider a possible improvement to the processor datapath, the decision usually depends on the cost/performance trade-off . In the following three problems, assume that we are starting with a datapath from Figure 4.2, where I-Mem, Add, Mux, ALU, Regs, D-Mem, and Control blocks have latencies of 400 ps, 100 ps, 30 ps, 120 ps, 200 ps, 350 ps, and 100 ps, respectively, and costs of 1000, 30, 10, 100, 200, 2000, and 500, respectively. Consider the addition of a multiplier to the ALU.  This addition will add 300 ps to the latency of the ALU and will add a cost of 600 to the ALU.  Th e result will be 5% fewer instructions executed since we will no longer need to emulate the MUL instruction. 
+When processor designers consider a possible improvement to the processor datapath, the decision usually depends on the cost/performance trade-off . In the following three problems, assume that we are starting with a datapath from Figure 4.2, where I-Mem, Add, Mux, ALU, Regs, D-Mem, and Control blocks have latencies of 400 ps, 100 ps, 30 ps, 120 ps, 200 ps, 350 ps, and 100 ps, respectively, and costs of 1000, 30, 10, 100, 200, 2000, and 500, respectively. Consider the addition of a multiplier to the ALU.  This addition will add 300 ps to the latency of the ALU and will add a cost of 600 to the ALU.  The result will be 5% fewer instructions executed since we will no longer need to emulate the MUL instruction. 
 
 ![4.2](4.2.png)
 
@@ -36,9 +36,9 @@ Thus, the cost/performance ratio is (new cost / old cost) * (old performance / n
 # 4.4
 Problems in this exercise assume that logic blocks needed to implement a processor’s datapath have the following latencies:
 
-|I-Mem|Add|Mux|ALU|Regs|D-Mem|Sign-Extend|Shift-Left-2|
-|-|-|-|-|-|-|-|-|
-|200ps|70ps|20ps|90ps|90ps|250ps|15ps|10ps|
+| I-Mem | Add  | Mux  | ALU  | Regs | D-Mem | Sign-Extend | Shift-Left-2 |
+| ----- | ---- | ---- | ---- | ---- | ----- | ----------- | ------------ |
+| 200ps | 70ps | 20ps | 90ps | 90ps | 250ps | 15ps        | 10ps         |
 
 ## 4.4.1 [10] <§4.3> 
 If the only thing we need to do in a processor is fetch consecutive instructions (Figure 4.6), what would the cycle time be? 
@@ -79,9 +79,9 @@ Assuming that we only support beq and add instructions, discuss how changes in t
 # 4.7
 In this exercise we examine in detail how an instruction is executed in a single-cycle datapath. Problems in this exercise refer to a clock cycle in which the processor fetches the following instruction word: 10101100011000100000000000010100. Assume that data memory is all zeros and that the processor’s registers have the following values at the beginning of the cycle in which the above instruction word is fetched:
 
-|r0|r1|r2|r3|r4|r5|r6|r8|r12|r31|
-|-|-|-|-|-|-|-|-|-|-|
-|0|–1|2|–3|–4|10|6|8|2|–16|
+| r0  | r1  | r2  | r3  | r4  | r5  | r6  | r8  | r12 | r31 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 0   | –1  | 2   | –3  | –4  | 10  | 6   | 8   | 2   | –16 |
 
 ## 4.7.1 [5] <§4.4> 
 What are the outputs of the sign-extend and the jump “Shift  left  2” unit (near the top of Figure 4.24) for this instruction word? 
